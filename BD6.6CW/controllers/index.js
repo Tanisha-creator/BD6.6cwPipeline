@@ -22,12 +22,10 @@ let employees = [
   },
 ];
 
-function getEmployees() {
+export function getEmployees() {
   return employees;
 }
 
-function getEmployeesById(id) {
-  return employees.find((employee) => employee.id === id);
+export function getEmployeesById(id) {
+  return employees.find((employee) => employee.employeeId === id);
 }
-
-export { getEmployees, getEmployeesById };

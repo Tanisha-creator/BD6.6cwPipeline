@@ -1,11 +1,13 @@
-import { getEmployees, getEmployeesById } from "../controllers/index.js";
+let { getEmployees, getEmployeesById } = require("../controllers");
+
+const { app } = require("../index");
 let request = require("supertest");
 let http = require("http");
 const { beforeEach } = require("node:test");
 
 jest.mock("../controllers", () => ({
   ...jest.requireActual("../controllers"),
-  getEmployees: jets.fn(),
+  getEmployees: jest.fn(),
   getEmployeesById: jest.fn(),
 }));
 
@@ -23,11 +25,8 @@ describe("APIs test", () => {
     jest.clearAllMocks();
   });
 
-  it("should get all employess", () => {
-    let res = request(server).get("/employees");
-    expect(res.status).toBe(200);
-    expect(res.body.length).toBe(3);
-    expect(res.body).toEqual([
+  it("should get all employees", async () => {
+    let mockData = [
       {
         employeeId: 1,
         name: "Rahul Sharma",
@@ -49,18 +48,26 @@ describe("APIs test", () => {
         departmentId: 1,
         roleId: 3,
       },
-    ]);
-  });
-  it("should get the employee by id", () => {
-    let res = request(server).get("/employees/details/1");
+    ];
+    getEmployees.mockReturnValue(mockData);
+    let res = await request(server).get("/employees");
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({
+    expect(res.body.length).toBe(3);
+    expect(res.body).toEqual(mockData);
+  });
+
+  it("should get the employee by id", async () => {
+    let mockData = {
       employeeId: 1,
       name: "Rahul Sharma",
       email: "rahul.sharma@example.com",
       departmentId: 1,
       roleId: 1,
-    });
+    };
+    getEmployeesById.mockReturnValue(mockData);
+    let res = await request(server).get("/employees/details/1");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(mockData);
   });
 });
 
